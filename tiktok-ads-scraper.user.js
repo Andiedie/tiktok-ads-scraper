@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TikTok Ads Scraper
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      0.7
 // @description  Scrape ads data from TikTok Creative Center
 // @match        https://ads.tiktok.com/*
 // @grant        none
@@ -97,9 +97,17 @@
         const url = URL.createObjectURL(blob);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const period = urlParams.get('period') || 'unknown';
-        const region = urlParams.get('region') || 'unknown';
-        const fileName = `tiktok_ads_data_period_${period}_region_${region.toLowerCase()}.json`;
+        let fileName = 'tiktok_ads_data';
+
+        urlParams.forEach((value, key) => {
+            fileName += `_${key}_${value.toLowerCase()}`;
+        });
+
+        if (fileName === 'tiktok_ads_data') {
+            fileName += '_no_params';
+        }
+
+        fileName += '.json';
 
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
@@ -119,7 +127,7 @@
 2. 脚本会自动滚动页面并收集广告数据。
 3. 你可以随时点击"停止"按钮暂停收集。
 4. 收集过程中或结束后，可以点击"导出"按钮下载已收集的数据。
-5. 导出的文件名会包含当前页面的时间段和地区信息。
+5. 导出的文件名会包含当前页面的所有URL参数。
 6. 收集数据时，请保持网页打开状态。`);
     }
 
